@@ -41,7 +41,7 @@ df_all_ <- df_all %>%
     names_from = "type",
     values_from = "value"
   ) %>% 
-  # Convert temperature values from K to F
+  # Convert temperature values from K to F. Relative humidity ranges from 0-100 (%)
   mutate(
     tmmx = kelvin.to.fahrenheit(tmmx)
   ) %>% 
