@@ -1,4 +1,7 @@
-# This script will calculate average daily heat index for each county in Texas from 1991 to 2022. It will then define "heat event" day from 2013 to 2022 where daily heat index is higher than the 95th percentile of 1991-2020 heat index distribution.
+# This script will calculate maximum daily heat index for each county in Texas
+# from 1991 to 2022. It will then define "heat event" day from 2013 to 2022
+# where daily heat index is higher than the 95th percentile of 1991-2020 heat
+# index distribution.
 
 # Libraries
 library(tidyverse)
@@ -16,7 +19,8 @@ years <- c(1991:2022)
 ########## LOAD, BIND DATA AND CALCULATE HEAT INDEX ##########
 ##############################################################
 
-# Load and bind all data from gridMET -- downloaded through `scripts/get_gridmet_data.R`
+# Load and bind all data from gridMET 
+# -- downloaded through `scripts/get_gridmet_data.R`
 # Empty data frame for binded data
 df_all <- data.frame()
 
