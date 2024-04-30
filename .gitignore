@@ -1,6 +1,7 @@
 .RData
 .Rhistory
 .Rproj.user
+.RDataTmp
 county_grid.qgz
 data/*
 mockup/*

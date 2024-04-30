@@ -12,7 +12,7 @@ library(climateR)
 library(sf)
 
 # source
-source("scripts/utils.R")
+source("scripts/00_utils.R")
 
 # Using CRS NAD 83
 crs <- 4269

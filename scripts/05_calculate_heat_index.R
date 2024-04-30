@@ -10,7 +10,7 @@ library(googlesheets4)
 library(weathermetrics)
 
 # Source
-source("scripts/utils.R")
+source("scripts/00_utils.R")
 
 # variables
 years <- c(1991:2022)
@@ -94,14 +94,6 @@ heat_event_2013_2022 <- df_all_ %>%
 #     "data/output/daily_heat_event_2013_2022.csv",
 #     row.names = F
 #   )
-
-# Write in a google spreadsheet
-# heat_event_2013_2022 %>% 
-#   write_sheet(
-#     ss = "https://docs.google.com/spreadsheets/d/1c47n_L88je7YTu4CDB8m6KorjvS8HvS7cUZkKEm6dCI",
-#     sheet = "2013-2022"
-#   )
-
 
 
 

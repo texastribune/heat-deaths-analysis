@@ -7,7 +7,7 @@ library(googlesheets4)
 library(prism)
 
 # source
-source("scripts/utils.R")
+source("scripts/00_utils.R")
 
 # Set the download directory
 prism_set_dl_dir("data/prism")

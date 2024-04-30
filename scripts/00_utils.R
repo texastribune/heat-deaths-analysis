@@ -9,7 +9,8 @@ load_death_indexes <- function(year) {
     mutate(
       name = paste(first_name, middle_name, last_name),
       date_of_death = mdy(date_of_death),
-      year = year(date_of_death)
+      year = year(date_of_death),
+      county_of_death = str_remove_all(county_of_death, " "),
     ) %>% 
     select(name, sex, date_of_death, county_of_death, year) %>% 
     arrange(county_of_death) %>% 

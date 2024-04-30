@@ -4,7 +4,7 @@ library(lubridate)
 library(googlesheets4)
 
 # source
-source("scripts/utils.R")
+source("scripts/00_utils.R")
 
 # operator
 `%notin%` <- Negate(`%in%`)
@@ -31,33 +31,6 @@ df_all_years %>%
   group_by(name, county_of_death, date_of_death) %>% 
   summarize(total = n()) %>% 
   filter(total != 1)
-
-# Year by year statewide
-df_all_years %>% 
-  group_by(year) %>% 
-  summarize(total = n()) %>% 
-  write_sheet(
-    ss = "https://docs.google.com/spreadsheets/d/1juylzcqzxpCj4Y7IPxlixr4D2biqpJqlZtN6VWnpP5c",
-    sheet = "Yearly statewide"
-  )
-
-# By date statewide
-df_all_years %>% 
-  group_by(date_of_death) %>% 
-  summarize(total = n()) %>% 
-  write_sheet(
-    ss = "https://docs.google.com/spreadsheets/d/1juylzcqzxpCj4Y7IPxlixr4D2biqpJqlZtN6VWnpP5c",
-    sheet = "Daily statewide"
-  )
-  
-# Year by year by county
-df_all_years %>% 
-  group_by(year, county_of_death) %>% 
-  summarize(total = n()) %>% 
-  write_sheet(
-    ss = "https://docs.google.com/spreadsheets/d/1juylzcqzxpCj4Y7IPxlixr4D2biqpJqlZtN6VWnpP5c",
-    sheet = "Yearly by county"
-  )
 
 # Daily by county
 df_all_years %>% 
