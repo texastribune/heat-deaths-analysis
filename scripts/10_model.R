@@ -10,7 +10,11 @@ df_processed <- read.csv("data/output/final_merged_di_hi_covid_population.csv")
 
 # Use only April to October
 df_prepped <- df_processed %>% 
-  filter(month >= 4 & month <= 10)
+  filter(month >= 4 & month <= 10) %>% 
+  mutate(deaths_ = deaths) %>% 
+  # simply subtract covid deaths
+  mutate(deaths = deaths_ - covid_deaths) %>% 
+  mutate(deaths = ifelse(deaths < 0, 0, deaths))
 
 # Get a list of all counties
 counties <- unique(df_prepped$count)
@@ -125,15 +129,15 @@ for(c in counties) {
 output[output == Inf] <- NA
 output[output == -Inf] <- NA
 
-# output %>% 
-#   arrange(county) %>% 
+# output %>%
+#   arrange(county) %>%
 #   write_sheet(
 #     "15PRJfTR8asQS1IhYGmqdw0GQ44rK5OtqIK9TlxjRUAg",
-#     sheet = "output"
+#     sheet = "output_covid_subtracted"
 #   )
 # 
-# output %>% 
+# output %>%
 #   write.csv(
-#     "data/output/excess_deaths.csv",
+#     "data/output/excess_deaths_covid_subtracted.csv",
 #     row.names = F
 #   )

@@ -9,8 +9,8 @@ Since this analysis involves building a statistical model, most of it was conduc
 
 ## Key findings:
 - Output data: [Spreadsheet](https://docs.google.com/spreadsheets/d/15PRJfTR8asQS1IhYGmqdw0GQ44rK5OtqIK9TlxjRUAg/edit#gid=119782735)
-- Geographical distribution on excess deaths on heat event days based on initial preliminary analysis: [Map](https://www.datawrapper.de/_/LTVsM/)
-<img src="./mockup/initial_map.png" width="320">
+- Geographical distribution on excess deaths on heat event days based on initial preliminary analysis: [Map](https://www.datawrapper.de/_/aFPMM/)
+<img src="./mockup/initial_map_covid_subtracted.png" width="320">
 
 ## Data sources:
 - **Death indexes**:
