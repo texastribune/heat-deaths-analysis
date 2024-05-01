@@ -141,3 +141,19 @@ output[output == -Inf] <- NA
 #     "data/output/excess_deaths_covid_subtracted.csv",
 #     row.names = F
 #   )
+
+output <- read.csv("data/output/excess_deaths_covid_subtracted.csv")
+
+output %>% 
+  ggplot(aes(x = excess)) +
+  geom_histogram(binwidth = 1, aes(fill = cut(excess, 254))) +
+  theme_minimal() +
+  labs(
+    title = "Distribution of total excess deaths by county",
+    x = "Total number of excess deaths", y = ""
+  ) +
+  theme(
+    legend.position = "none"
+  ) +
+  scale_fill_brewer(palette = "RdYlGn")
+ggsave("mockup/distribution_excess.png")
