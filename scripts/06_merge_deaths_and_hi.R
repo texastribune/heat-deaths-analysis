@@ -25,11 +25,18 @@ heat_event <- read.csv("data/output/daily_heat_event_2013_2022.csv") %>%
     county = toupper(county)
   )
 
+# Heat index by CDC
+heat_event_cdc <- read.csv("data/output/daily_heat_event_cdc_2013_2022.csv") 
+
 # merge data
 merged <- full_join(
   death_indexes, heat_event,
   by = c("date", "county")
 ) %>% 
+  full_join(
+    heat_event_cdc,
+    by = c("date", "year", "month", "day", "county")
+  ) %>% 
   mutate(
     # parse date
     date = ymd(date),
@@ -38,18 +45,18 @@ merged <- full_join(
     # determine weekend
     is_weekend = ifelse(wday(date, label = T) %in% c("Sat", "Sun"), T, F)
   ) %>% 
-  select(date, year, month, day, is_weekend, county, deaths, tmmx:is_heat_event)
+  select(date, year, month, day, is_weekend, county, deaths, tmmx:is_heat_event_hi_cdc_1981_2010)
 
 # save as CSV
-# merged %>% 
+# merged %>%
 #   write.csv(
 #     "data/output/merged_deaths_heat_event_2013_2022.csv",
 #     row.names = F
 #   )
 
 # save subset data in spreadsheet to show experts
-# merged %>% 
-#   filter(county %in% c("HARRIS", "WEBB", "LIBERTY")) %>% 
+# merged %>%
+#   filter(county %in% c("HARRIS", "WEBB", "LIBERTY")) %>%
 #   write_sheet(
 #     ss = "https://docs.google.com/spreadsheets/d/1XDwkb3km6MtcoZigqERiXbnW9uvhVeNt4Ib4g1o304w"
 #   )

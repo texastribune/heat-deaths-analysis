@@ -43,7 +43,7 @@ points <- st_as_sf(
 ##################################################
 
 # Going to get daily data between these years
-years <- c(1991:2022)
+years <- c(1981:2022)
 
 # Data variable abbreviations, used for direct download (https://www.northwestknowledge.net/metdata/data/)
   # Here is the list of variable abbreviations:

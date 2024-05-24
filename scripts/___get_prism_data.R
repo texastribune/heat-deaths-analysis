@@ -5,12 +5,16 @@ library(tidyverse)
 library(lubridate)
 library(googlesheets4)
 library(prism)
+# https://github.com/ropensci/prism
 
 # source
 source("scripts/00_utils.R")
 
 # Set the download directory
 prism_set_dl_dir("data/prism")
+
+get_prism_normals("tmean", "4km", annual = TRUE, keepZip = FALSE)
+pd_to_file("PRISM_tmean_30yr_normal_4kmM5_annual_bil")
 
 # Clean average grid point for each county
 # Using QGIS, I joined prism 4k polygon mesh (https://prism.oregonstate.edu/downloads/) and Texas county boundaries (https://gis-txdot.opendata.arcgis.com/datasets/TXDOT::texas-county-boundaries-detailed/explore?location=30.834886%2C-100.077018%2C6.28), and calculated average latitude and longitude of all grid points within the county perimeters.
