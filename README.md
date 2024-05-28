@@ -5,11 +5,11 @@ The analysis is inspired by and mostly follows [an analysis conducted by the Los
 
 In short, this analysis extimates the excess deaths on extreme heat days for 99 largest county in Texas between May and September in 2020, 2021 and 2022.
 
-To do that, we built a statistical model to predict a 'normal' daily death counts on a day in a county between 2020 and 2022, had it not been an extreme heat day. To build a model, we used daily death tolls and maximum heat index for each county between 2013 and 2019. In other words, we built a model using pre-COVID data, and using that model, we estimated daily excess deaths by county during the pandemic.
+To do that, we built a statistical model to predict a 'normal' daily death counts on a day in a county between 2020 and 2022, had it not been an extreme heat day. To build a model, we used daily death tolls and maximum heat index for each county between 2013 and 2019. In other words, we built a model using pre-COVID data, and using that model, we estimated daily excess deaths by county during the pandemic. We are 
 
 The 99 counties included in this analysis had more than 25,000 people in the 2020 Census. We needed to exclude smaller counties from this analysis because there were simply not enough data to build a robust model and make an estimate. We set this 25,000 threshold because it would cover more than 90% (actually 94.8%) of the state's population.
 
-Daily excess deaths is calculated as actual deaths minus estimated deaths. For each 2013-2019 daily maximum heat index estimate, we defined whether the day was an extreme heat day -- above the county's 95th percentile value of 1981-2010 maximum heat index distribution. And the model explains, for each county, actual deaths as a function of whether it was an extreme heat day, while also controlling for 1) a month, 2) whether it was in the weekend (since there may be fewer death certificate submissions), 3) population increase.
+Daily excess deaths is calculated as actual deaths minus estimated deaths. For each 2013-2019 daily maximum heat index estimate, we defined whether the day was an extreme heat day -- above the county's 95th percentile value of 1981-2010 maximum heat index distribution. And the model explains, for each county, actual deaths as a function of whether it was an extreme heat day, while also controlling for 1) a year (to account for deaths or even crude death rates to naturally increasing due to population aging), 2) a month and 3) whether it was in the weekend (since there may be fewer death certificate submissions), as well as accountinf for 4) a population increase.
 
 After 2020, there are so many more excess deaths than before 2019, not surprisingly because of the COVID-19 pandemic. And it may be safe to think most excess deaths are due to COVID. To account for COVID deaths, we simply subtracted, from estimated excess deaths, the number of people who died of COVID (* as of May 24, the data is based on county of residence, so it's not accurate). We also subtracted deaths due to mass shootings.
 
@@ -25,6 +25,7 @@ Although our results have margins of errors, by looking at the average of lower 
 - Geographical distribution on relative risk (the number of people who died on extreme heat days divided by the estimated number of people who would have died had it not been an extreme heat day) on heat event days based on initial preliminary analysis:
 [Map (by-residence COVID deaths subtracted)](https://www.datawrapper.de/_/LTVsM/) | [Map (COVID deaths not subtracted)](https://www.datawrapper.de/_/aFPMM/)
 It's important to look at relative risk, since it indirectly accounts for population and other factors (age etc.) associated with counties. If two counties had the same population and same excess deaths on extreme heat days, per-capita excess deaths would be the same. But if one county's (county A) estimated deaths were half the size of the other county (county B), then relative risk on extreme heat days would be much higher in county A. This means that county A is much more vulnerable to extreme heat compared to county B.
+
 <img src="./mockup/initial_map_covid_subtracted.png" width="500"><img src="./mockup/initial_map.png" width="500">
 <img src="./mockup/distribution_rr.png" width="500">
 

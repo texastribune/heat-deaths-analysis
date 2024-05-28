@@ -61,8 +61,6 @@ get_rolling_avg <- function(df_all_, year_start, year_end) {
 }
 
 calculate_excess_deaths <- function(c, df_prepped) {
-  c <- "HARRIS"
-  
   # Filter data to that county
   df_county <- df_prepped %>% 
     filter(county == c)
@@ -79,6 +77,7 @@ calculate_excess_deaths <- function(c, df_prepped) {
   model <- gam(
     deaths ~ 
       is_heat_event +
+      year +
       as.factor(month) +
       as.factor(is_weekend) +
       offset(log(population)),
