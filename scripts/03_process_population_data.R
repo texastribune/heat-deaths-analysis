@@ -7,11 +7,8 @@ library(tidyverse)
 library(readxl)
 library(lubridate)
 
-# source
+# Source
 source("scripts/00_utils.R")
-
-# operator
-`%notin%` <- Negate(`%in%`)
 
 # Load data
 # 2010-2019
@@ -64,17 +61,30 @@ df_2020_2023 <- df_2020_2023 %>%
   )
 
 # Merge
-df <- rbind(df_2010_2019, df_2020_2023) %>% 
-  arrange(county)
+df <- rbind(df_2010_2019, df_2020_2023) 
 
-# Filter
+# Filter and add larger county variable
 df <- df %>% 
   filter(year %in% c(2013:2022)) %>% 
-  mutate(year = as.numeric(year))
+  mutate(county = str_remove_all(county, " "))
+
+# Get larger counties -- ones with 100K or more population in 2020
+larger_counties <- df %>%
+  filter(year == 2020) %>% 
+  mutate(is_larger_county = ifelse(population > 100000, T, F)) %>% 
+  select(county, is_larger_county)
+
+df <- full_join(
+  df, larger_counties,
+  by = c("county")
+)
 
 # Save as CSV
-# df %>% 
-#   write.csv(
-#     "data/output/annually_population_by_county_2013_2022.csv",
-#     row.names = F
-#   )
+df %>%
+  write.csv(
+    "data/output/population.csv",
+    row.names = F
+  )
+
+# Clean the environment
+rm(raw_2010_2019, df_2010_2019, raw_2020_2023, df_2020_2023, larger_counties, df)

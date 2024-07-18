@@ -1,10 +1,9 @@
+# This script will load raw death indexes and aggregate them by county.
+
 # Libraries
 library(tidyverse)
 library(lubridate)
 library(googlesheets4)
-
-# source
-source("scripts/00_utils.R")
 
 # operator
 `%notin%` <- Negate(`%in%`)
@@ -18,8 +17,33 @@ years <- c(2013:2022)
 df_all_years <- data.frame()
 
 for(year in years) {
-  df <- load_death_indexes(year)
+  print(year)
+  filename <- paste0("data/raw/death-indexes/", year, ".csv")
+  raw <- read.csv(filename, fileEncoding="latin1")
+  
+  df <- raw %>% 
+    tail(-13)
+  colnames(df) <- c("last_name", "first_name", "middle_name", "date", "county", "sex")
+  
+  df <- df %>% 
+    mutate(
+      first_name = ifelse(first_name != "", trimws(first_name), ""),
+      middle_name = ifelse(middle_name != "", trimws(middle_name), ""),
+      last_name = ifelse(last_name != "", trimws(last_name), "")
+    ) %>% 
+    mutate(
+      name = paste(first_name, middle_name, last_name),
+      date = mdy(date),
+      year = year(date),
+      county = str_remove_all(county, " "),
+    ) %>% 
+    select(name, sex, date, county, year) %>% 
+    arrange(county) %>% 
+    arrange(date) 
+  
   df_all_years <- rbind(df, df_all_years)  
+  
+  rm(year, filename, raw, df)
 }
 
 #########################################################
@@ -28,12 +52,19 @@ for(year in years) {
 
 # Missing / duplicated data?
 df_all_years %>% 
-  group_by(name, county_of_death, date_of_death) %>% 
+  group_by(name, county, date) %>% 
   summarize(total = n()) %>% 
   filter(total != 1)
+# "BABY DIOP" in Dallas on July 27, 2013 and "GUADALUPE GONZALES" in Cameron on May 13, 2014, have same first, middle, last names and date of death, county of death. But they are associated with different sex. Should we treat them as duplicates?
 
 # Daily by county
-df_all_years %>% 
-  group_by(date_of_death, county_of_death) %>% 
-  summarize(total = n()) %>% 
-  write.csv("data/output/daily_death_by_county_2013_2022.csv", row.names = F)
+death_indexes <- df_all_years %>% 
+  group_by(date, county) %>% 
+  summarize(total_deaths = n()) 
+
+death_indexes %>% 
+  filter(county != "UNKNOWN") %>% 
+  write.csv("data/output/death_indexes.csv", row.names = F)
+
+# Clean environment
+rm(df_all_years, death_indexes)

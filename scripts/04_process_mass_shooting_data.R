@@ -21,5 +21,8 @@ df <- read.csv("data/mass-shooting/mass_shooting_by_county.csv") %>%
   )
 
 # Write as CSV
-# df %>% 
-#   write.csv("data/output/daily_mass_shootings.csv", row.names = F)
+df %>%
+  write.csv("data/output/mass_shootings.csv", row.names = F)
+
+# Clean the environment
+rm(df)
