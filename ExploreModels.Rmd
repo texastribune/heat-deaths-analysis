@@ -1,0 +1,123 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+```{r}
+# Library
+library(tidyverse)
+library(mgcv)
+library(googlesheets4)
+library(ggplot2)
+```
+
+```{r}
+# Load data
+df_processed <- read.csv("data/output/processed.csv") %>% 
+  # only using april to september in this setting
+  filter(month >= 4 & month <= 9)
+
+# County name
+counties <- df_processed$county %>% 
+  unique()
+```
+
+```{r}
+# Load data
+df_processed <- read.csv("data/output/processed.csv") %>% 
+  # only using april to september in this setting
+  filter(month >= 4 & month <= 9)
+
+# County name
+counties <- df_processed$county %>% 
+  unique()
+```
+
+```{r}
+c <- counties[2]
+
+print(paste0(2, " ", c, "..."))
+
+# filter data to that county
+df_county <- df_processed %>% 
+  filter(county == c)
+```
+
+
+```{r}
+lm <- ggplot(data = df_county,
+       mapping = aes(x = hi, y = deaths, color=is_heat_event)) +
+  geom_point() +
+  labs(title = "Heat Event associated with increased loss of life",
+       subtitle = "Correlation with increased heat and loss of life is stronger for days denoted as a heat event. Definition of heat event varies by county and year.",
+       x = "Daily High (F)", # x-axis label
+       y = "Deaths",
+       color = "Is heat event") +
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+ggsave("eventByDeath.png")
+lm
+```
+```{r}
+lm <- ggplot(data = df_county,
+       mapping = aes(x = hi, y = deaths, color=ifelse(lag(is_heat_event) | lag(is_heat_event,2) | lag(is_heat_event,3) | lag(is_heat_event,4), T, F))) +
+  geom_point() +
+  labs(title = "Recent heat event associated with increased loss of life",
+       subtitle = "Definition of heat event varies by county and year.",
+       x = "Daily High (F)", # x-axis label
+       y = "Deaths",
+       color = "Recent heat event") +
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+ggsave("recentHeatEvent.png")
+lm
+```
+
+
+```{r}
+# the linear model
+model <- lm(
+  deaths ~ 
+    is_heat_event +
+    pmax(hi - 90, 0) +
+    year + # controlling by year
+    ifelse(lag(is_heat_event) | lag(is_heat_event,2) | lag(is_heat_event,3) | lag(is_heat_event,4), T, F) + 
+    as.factor(month) +
+    as.factor(is_weekend) +
+    offset(log(population)),
+  data = df_county
+)
+
+summary(model)
+```
+```{r}
+# the generative additive model
+model <- gam(
+  deaths ~ 
+    is_heat_event +
+    pmax(hi - 90, 0) +
+    year + # controlling by year
+    ifelse(lag(is_heat_event) | lag(is_heat_event,2) | lag(is_heat_event,3) | lag(is_heat_event,4), T, F) + 
+    as.factor(month) +
+    as.factor(is_weekend) +
+    offset(log(population)),
+  family = nb(link = "log"),
+  data = df_county
+)
+
+summary(model)
+```
+
+
