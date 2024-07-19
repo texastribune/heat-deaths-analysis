@@ -19,7 +19,11 @@ library(tidyverse)
 library(mgcv)
 library(googlesheets4)
 library(ggplot2)
+library(dlnm)
+library(splines)
 ```
+
+## Data prep
 
 ```{r}
 # Load data
@@ -32,16 +36,6 @@ counties <- df_processed$county %>%
   unique()
 ```
 
-```{r}
-# Load data
-df_processed <- read.csv("data/output/processed.csv") %>% 
-  # only using april to september in this setting
-  filter(month >= 4 & month <= 9)
-
-# County name
-counties <- df_processed$county %>% 
-  unique()
-```
 
 ```{r}
 c <- counties[2]
@@ -53,6 +47,7 @@ df_county <- df_processed %>%
   filter(county == c)
 ```
 
+## Correlation testing
 
 ```{r}
 lm <- ggplot(data = df_county,
@@ -85,6 +80,7 @@ ggsave("recentHeatEvent.png")
 lm
 ```
 
+## Recency/Variable Testing
 
 ```{r}
 # the linear model
@@ -102,18 +98,106 @@ model <- lm(
 
 summary(model)
 ```
+
+
+## Lag Modeling
+Main resources:
+Overview: https://cran.r-project.org/web/packages/dlnm/vignettes/dlnmOverview.pdf
+Examples: https://cran.r-project.org/web/packages/dlnm/vignettes/dlnmTS.pdf
+Documentation: https://cran.r-project.org/web/packages/dlnm/dlnm.pdf
+
+Additional resources:
+Package paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3191524/#:~:text=Distributed%20lag%20non%2Dlinear%20models,effects%20in%20time%20series%20data.
+Modeling heat with package: https://journals.lww.com/epidem/fulltext/2006/11000/models_for_the_relationship_between_ambient.6.aspx
+Suggested paper: https://academic.oup.com/ije/article/53/3/dyae061/7654027
+
+
 ```{r}
+#dlnm examples
+summary(chicagoNMMAPS)
+### relationship between temperature and mortality: double threshold
+b <- onebasis(chicagoNMMAPS$temp, "thr", thr=c(10,25))
+summary(b)
+model <- glm(death ~ b, family=quasipoisson(), chicagoNMMAPS)
+pred <- crosspred(b, model, by=1)
+plot(pred, xlab="Temperature (C)", ylab="RR", main="RR for temperature")
+
+summary(df_county$celsius)
+# with our data
+df_county$celsius <- with(df_county, (hi-32)*5/9)
+our_b <- onebasis(df_county$celsius, "thr", thr=25)
+summary(our_b)
+model <- glm(deaths ~ our_b, family=quasipoisson(), df_county)
+pred <- crosspred(our_b, model, by=1)
+pred <- crosspred(our_b, model)
+plot(pred, xlab="Temperature (C)", ylab="RR", main="RR for temperature")
+```
+
+```{r}
+df_county$celsius <- with(df_county, (hi-32)*5/9)
+
+# splines visual example adaption
+temp_basis <- crossbasis(df_county$celsius, lag=3, argvar=list(df=5),
+arglag=list(fun="strata",breaks=1))
+
+model1 <- glm(deaths ~ temp_basis +
+                year +
+                as.factor(month) +
+                as.factor(is_weekend) +
+                offset(log(population)),
+family=quasipoisson(), df_county)
+
+pred1 <- crosspred(temp_basis, model1, at=0:20, bylag=1, cumul=TRUE)
+
+plot(pred1, "slices", var=10, col=3, ylab="RR", ci.arg=list(density=15,lwd=2),
+main="Association with a 10-degree increase in Temp (C)")
+plot(pred1, "slices", var=10, col=2, cumul=TRUE, ylab="Cumulative RR",
+main="Cumulative association with a 10-degree increase in Temp (C)")
+```
+
+
+```{r}
+df_county$recent_hi <- crossbasis(df_county$hi, lag=3, argvar=list(df=3),
+arglag=list(fun="strata",breaks=1))
+
+df_county$recent_heat_event <- crossbasis(df_county$is_heat_event, lag=4, argvar=list(df=1),
+arglag=list(fun="log"))
+
+summary(df_county$recent_heat_event)
+
 # the generative additive model
 model <- gam(
   deaths ~ 
-    is_heat_event +
-    pmax(hi - 90, 0) +
+    # is_heat_event +
+    # pmax(hi - 90, 0) +
     year + # controlling by year
-    ifelse(lag(is_heat_event) | lag(is_heat_event,2) | lag(is_heat_event,3) | lag(is_heat_event,4), T, F) + 
+    recent_heat_event +
+    # recent_hi +
+    # ifelse(lag(is_heat_event) | lag(is_heat_event,2) | lag(is_heat_event,3) | lag(is_heat_event,4), T, F) + 
     as.factor(month) +
     as.factor(is_weekend) +
     offset(log(population)),
   family = nb(link = "log"),
+  data = df_county
+)
+
+summary(model)
+plot(pred, xlab="recent_heat_event", ylab="RR", main="RR for recent_heat_event")
+```
+```{r}
+# the glm with quasipoisson family (like a tutorial)
+model <- glm(
+  deaths ~ 
+    is_heat_event +
+    # pmax(hi - 90, 0) +
+    year + # controlling by year
+    # recent_heat_event +
+    # recent_hi +
+    # ifelse(lag(is_heat_event) | lag(is_heat_event,2) | lag(is_heat_event,3) | lag(is_heat_event,4), T, F) + 
+    as.factor(month) +
+    as.factor(is_weekend) +
+    offset(log(population)),
+  family = quasipoisson(),
   data = df_county
 )
 
