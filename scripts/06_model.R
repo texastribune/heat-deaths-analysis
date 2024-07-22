@@ -8,7 +8,8 @@ library(googlesheets4)
 # Load data
 df_processed <- read.csv("data/output/processed.csv") %>% 
   # only using april to september in this setting
-  filter(month >= 4 & month <= 9)
+  filter(month >= 4 & month <= 9) %>% 
+  mutate(is_heat_event = is_heat_event_summer)
 
 # County name
 counties <- df_processed$county %>% 

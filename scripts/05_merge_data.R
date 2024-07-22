@@ -49,10 +49,12 @@ df_processed <- df_merged %>%
   filter(year >= 2013 & year <= 2019) %>% 
   # only using 41 most populous counties
   filter(is_larger_county == T) %>% 
+  # adding a variable about weekend
+  mutate(is_weekend = ifelse(wday(date, label = T) %in% c("Sat", "Sun"), T, F)) %>% 
   group_by(date, county) %>% 
   mutate(deaths = max(c(0, total_deaths - mass_shooting_deaths))) %>% 
   ungroup() %>%
-  select(date, county, year, month, day, deaths, population, hi, is_heat_event)
+  select(date, county, year, month, day, is_weekend, deaths, population, hi, is_heat_event_daily, is_heat_event_summer)
 
 # Write as CSV
 df_processed %>% 

@@ -51,7 +51,7 @@ yearly_merged %>%
   scale_fill_manual(values = c("lightgray", "#bf1c0e")) +
   labs(
     title = "Comparison between our estimates and DSHS count",
-    subtitle = "Daily relative threshold, April - September",
+    subtitle = "Summer relative threshold, April - September",
     x = "Deaths", y = "", fill = ""
   ) +
   theme_minimal() +

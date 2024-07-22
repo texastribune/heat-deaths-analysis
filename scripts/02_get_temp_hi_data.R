@@ -141,6 +141,16 @@ daily_threshold <- df_all_ %>%
   select(county, month, day, daily_threshold) %>% 
   distinct() 
 
+summer_threshold <- df_all_ %>% 
+  filter(year >= 1981 & year <= 2010) %>% 
+  filter(month >= 4 & month <= 9) %>% 
+  group_by(county) %>% 
+  mutate(
+    summer_threshold = quantile(hi, probs = 0.95, na.rm = T)
+  ) %>% 
+  select(county, summer_threshold) %>% 
+  distinct()
+
 # Merge 2013-2019 data with all these data above to define heat event days
 heat_event <- df_all_ %>% 
   filter(year >= 2013 & year <= 2019) %>% 
@@ -148,9 +158,14 @@ heat_event <- df_all_ %>%
     daily_threshold,
     by = c("county", "month", "day")
   ) %>% 
+  full_join(
+    summer_threshold,
+    by = c("county")
+  ) %>% 
   mutate(
     # Define heat event days as the max heat index is above the 95th percentile of base years
-    is_heat_event = ifelse(hi > daily_threshold, T, F)
+    is_heat_event_daily = ifelse(hi > daily_threshold, T, F),
+    is_heat_event_summer = ifelse(hi > summer_threshold, T, F)
   )
 
 # write as CSV
