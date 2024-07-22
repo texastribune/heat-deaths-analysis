@@ -37,20 +37,18 @@ counties <- df_processed$county %>%
 ```
 
 
-```{r}
-c <- counties[2]
-
-print(paste0(2, " ", c, "..."))
-
-# filter data to that county
-df_county <- df_processed %>% 
-  filter(county == c)
-```
-
 ## Correlation testing
 
 ```{r}
-lm <- ggplot(data = df_county,
+for(i in 1:length(counties)) {
+  c <- counties[i]
+  
+  print(paste0(i, " ", c, "..."))
+  
+  df_county <- df_processed %>% 
+    filter(county == c)
+  
+  lm <- ggplot(data = df_county,
        mapping = aes(x = hi, y = deaths, color=is_heat_event)) +
   geom_point() +
   labs(title = "Heat Event associated with increased loss of life",
@@ -61,8 +59,9 @@ lm <- ggplot(data = df_county,
   stat_smooth(method = "lm",
               formula = y ~ x,
               geom = "smooth")
-ggsave("eventByDeath.png")
-lm
+
+  ggsave(paste0("mockups/eventByDeath/", c, ".png"))
+}
 ```
 ```{r}
 lm <- ggplot(data = df_county,
@@ -204,4 +203,46 @@ model <- glm(
 summary(model)
 ```
 
+
+## Compare average heat index and the number of heat event days for each county
+
+```{r}
+for(i in 0:6) {
+  start <- i * 6 + 1
+  end <- i * 6 + 6
+  
+  counties_batch <- counties[start:end]
+  
+  df_county <- df_processed %>% 
+    filter(county %in% larger_counties) %>% 
+    filter(county %in% counties_batch)
+  
+  df_county_summarized <- df_county %>% 
+    group_by(year, county) %>% 
+    summarize(
+      daily = sum(is_heat_event_daily),
+      monthly = sum(is_heat_event_monthly),
+      summer = sum(is_heat_event_summer),
+      avg_heat_index = mean(hi)
+    ) %>% 
+    ungroup() %>% 
+    pivot_longer(
+      cols = daily:summer,
+      names_to = "heat_event_category",
+      values_to = "heat_event_days"
+    )
+  
+  df_county_summarized %>% 
+    ggplot() +
+    geom_col(aes(x = year, y = heat_event_days, fill = heat_event_category), position = position_dodge(0.7), width = 0.6) +
+    geom_line(aes(x = year, y = (avg_heat_index -40))) +
+    scale_y_continuous(sec.axis = sec_axis(~(.+40), name = "avg_heat_index")) +
+    scale_fill_manual(values = c("#ffcdab", "#ff8432", "#973d00")) +
+    facet_wrap(~county, scales = "free_y") +
+    theme_minimal() +
+    theme(legend.position = "top")
+  
+  ggsave(paste0("mockups/heatEventDays/", i, ".png"))
+}
+```
 
