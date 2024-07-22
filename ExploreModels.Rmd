@@ -36,6 +36,82 @@ counties <- df_processed$county %>%
   unique()
 ```
 
+```{r}
+head(df_processed)
+```
+
+
+## Exploring county level results
+
+```{r}
+# Output data
+daily_output <- read.csv("data/output/daily_output.csv")
+yearly_output <- read.csv("data/output/yearly_output.csv")
+output <- read.csv("data/output/output.csv")
+
+# Compare year-by-year
+countywise_total <- yearly_output %>% 
+  group_by(county) %>% 
+  summarize(
+    deaths = sum(total_deaths),
+    pred = sum(total_pred),
+    lo = sum(total_lo),
+    up = sum(total_up),
+    excess = sum(total_excess),
+    excess_lo = sum(total_excess_lo),
+    excess_up = sum(total_excess_up)
+  )
+
+# Barplot
+ggplot(countywise_total, aes(x=county, y=excess)) + 
+  geom_bar(stat = "identity") +
+  geom_errorbar( aes(x=county, ymin=excess_lo, ymax=excess_up), width=0.4, colour="orange", alpha=0.9, size=1.3) +
+  coord_flip()
+
+ggsave("countywise_excess.png", width=4, height=6)
+```
+
+```{r}
+countywise_heat <- df_processed %>% 
+  group_by(county, year) %>% 
+  summarize(
+    avg_hi = mean(hi),
+    count_heat_daily = sum(is_heat_event_daily, na.rm = TRUE),
+    count_heat_summer = sum(is_heat_event_summer, na.rm = TRUE)
+  )
+
+# Compare year-by-year
+countywise_yearly <- yearly_output %>% 
+  group_by(county, year) %>% 
+  summarize(
+    excess = sum(total_excess),
+  )
+
+# Merge
+county_merged <- full_join(
+  countywise_heat, countywise_yearly,
+  by = c("county", "year")
+)
+
+for(i in 1:length(counties)) {
+  c <- counties[i]
+  
+  print(paste0(i, " ", c, "..."))
+  
+  df_county_merged <- county_merged %>% 
+    filter(county == c)
+  
+  print(head(df_county_merged))
+  
+  ggplot(df_county_merged)  +  
+  geom_bar(aes(x=year, y=excess),stat="identity", fill="cyan",colour="#006000")+ 
+  geom_line(aes(x=year, y=avg_hi - 90),stat="identity",color="red")
+  # labs(title= "Courses vs Students Enrolled in GeeksforGeeks", 
+   #    x="Year",y="Number of Courses Sold") 
+  
+  ggsave(paste0("mockups/excessByTemp/", c, ".png"))
+}
+```
 
 ## Correlation testing
 

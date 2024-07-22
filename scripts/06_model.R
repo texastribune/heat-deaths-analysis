@@ -162,6 +162,8 @@ for(i in 1:length(counties)) {
   )
 }
 
+head(yearly_output)
+
 # Write output as CSV
 daily_output %>% 
   write.csv("data/output/daily_output.csv", row.names = F)
