@@ -1,11 +1,6 @@
 .RData
 .Rhistory
 .Rproj.user
-.RDataTmp
-.RDataTmp1
-county_grid.qgz
-data/*
-data
+excess-heat-deaths.Rproj
 **/.DS_Store
-__OLD__scripts/*
-mapdata/*
+data
