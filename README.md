@@ -1,6 +1,6 @@
 # Excess heat deaths analysis
 
-By [Yuriko Schumacher](https://www.texastribune.org/about/staff/yuriko-schumacher/) and [Angela Voit](https://github.com/angevoit)
+By [Yuriko Schumacher](https://www.texastribune.org/about/staff/yuriko-schumacher/) and [Angela Voit](https://www.linkedin.com/in/angelaevoit/)
 
 This document explains our statistical analysis that aims to estimate the excess number of people who died in Texas on the days that were significantly hotter than normal. The analysis examined data between 2013 and 2019 and uses death indexes and heat index data.
 
@@ -18,7 +18,7 @@ This analysis involved building a statistical model and controls for:
 3. weekends, when fewer death certificates may be submitted
 4. population increases over time.
 
-## What we did differently from the LA Times:
+## What we did differently from the LA Times
 ### Meteorological data
 We are using daily maximum heat indexes for this analysis instead of daily maximum air temperatures. We decided to use heat indexes after hearing from multiple experts that higher humidity increases the risk of health problems. [Other similar studies](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2792389) have used heat indexes too.
 ### Heat-event days
@@ -45,7 +45,7 @@ For a similar reason, we excluded 2020, 2021 and 2022 from this analysis because
 
 Additionally, the model only accounts for deaths on the days where the heat index was abnormally high — even though in some cases heat victims die days or weeks after heat exposure. This would contribute to undercounts in our estimates. 
 
-## Data sources:
+## Data sources
 ### Heat-related deaths count
 Data was requested from the Texas Department of State Health Services. According to DSHS, the heat-related death counts include records with ICD-10 codes X30 (hyperthermia), T67 (effects of heat and light) and P81.0 (hyperthermia for newborn babies). They exclude any deaths where W92 (exposure to man-made heat) is listed anywhere in the death certificate.
 
