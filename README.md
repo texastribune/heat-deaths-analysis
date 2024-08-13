@@ -45,6 +45,8 @@ For a similar reason, we excluded 2020, 2021 and 2022 from this analysis because
 
 Additionally, the model only accounts for deaths on the days where the heat index was abnormally high — even though in some cases heat victims die days or weeks after heat exposure. This would contribute to undercounts in our estimates. 
 
+The findings are consistent with other parts of our reporting and previous research suggesting excess deaths increase as heat rises.
+
 ## Data sources
 ### Heat-related deaths count
 Data was requested from the Texas Department of State Health Services. According to DSHS, the heat-related death counts include records with ICD-10 codes X30 (hyperthermia), T67 (effects of heat and light) and P81.0 (hyperthermia for newborn babies). They exclude any deaths where W92 (exposure to man-made heat) is listed anywhere in the death certificate.
