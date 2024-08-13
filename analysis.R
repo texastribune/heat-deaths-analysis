@@ -5,7 +5,7 @@
 library(tidyverse)
 library(mgcv)
 
-# Load data
+# Load processed data
 df_processed <- read.csv("data/processed.csv") %>% 
   # only using april to september in this setting
   filter(month >= 4 & month <= 9) 
@@ -79,7 +79,7 @@ for(i in 1:length(counties)) {
   # Tally up the predicted number of deaths on heat-event event days
   deaths.predicted <- sum(new_df_county_heat_days$pred)
   
-  # # Calculate relative risk
+  # Calculate relative risk
   rr <- deaths.heatdays / deaths.predicted
   # And its margin of error
   rr.lo <- exp(log(rr - 1.96 * sqrt(1 / deaths.heatdays + 1 / deaths.predicted)))
