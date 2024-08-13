@@ -1,6 +1,6 @@
 # Excess heat deaths analysis
 
-By [Yuriko Schumacher](https://www.texastribune.org/about/staff/yuriko-schumacher/) and [Angela Voit](https://www.linkedin.com/in/angelaevoit/)
+By [Yuriko Schumacher](https://www.texastribune.org/about/staff/yuriko-schumacher/) and [Angela Voit](https://www.texastribune.org/about/staff/angela-voit/)
 
 This document explains our statistical analysis that aims to estimate the excess number of people who died in Texas on the days that were significantly hotter than normal. The analysis examined data between 2013 and 2019 and uses death indexes and heat index data.
 

@@ -1,4 +1,5 @@
-# This script will load the processed data and run the model
+# This script will load the processed data and run the model.
+# Prior to this, we aggregated 2013-2019 death index data into daily death counts for each county, loaded in historical daily max heat index data to determine heat-event days between 2013-2019, merged these with population and mass shootings data, subtracted mass shooting deaths, and filtered for the 41 most populous counties.
 
 # Library
 library(tidyverse)
